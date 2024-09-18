@@ -6,16 +6,29 @@ const updateDisplay = (value) => {
   resultDiv.textContent = value;
 };
 
-const handleButtonClick = (value) => {
-  if (value === "=") {
-    try {
-      const result = eval(inputString.replace(/x/g, "*"));
-      updateDisplay(result);
-      inputString = result.toString();
-    } catch (error) {
+const calculateResult = () => {
+  try {
+    const sanitizedInput = inputString.replace(/x/g, "*");
+
+    let result = eval(sanitizedInput);
+
+    if (result === Infinity || result === -Infinity) {
       updateDisplay("Error");
       inputString = "";
+    } else {
+      result = parseFloat(result.toFixed(10));
+      updateDisplay(result);
+      inputString = result.toString();
     }
+  } catch (error) {
+    updateDisplay("Error");
+    inputString = "";
+  }
+};
+
+const handleButtonClick = (value) => {
+  if (value === "=") {
+    calculateResult();
   } else if (value === "RESET") {
     inputString = "";
     updateDisplay("0");
@@ -30,7 +43,9 @@ const handleButtonClick = (value) => {
 
 document.getElementById("key01").addEventListener("click", (event) => {
   const clickedButton = event.target;
-  const value = clickedButton.textContent;
 
-  handleButtonClick(value);
+  if (clickedButton.tagName === "BUTTON") {
+    const value = clickedButton.textContent;
+    handleButtonClick(value);
+  }
 });
